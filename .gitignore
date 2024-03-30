@@ -1,0 +1,6 @@
+dist/**
+notes
+.vscode
+.idea
+.env
+node_modules/**
