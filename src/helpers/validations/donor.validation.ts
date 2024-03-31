@@ -1,13 +1,17 @@
-import { z } from 'zod';
+import { coerce, z } from 'zod';
+import { createUserSchema } from './user.validation';
 
-export const donorSchema = z
+export const createDonorSchema = z
   .object({
-    user_id: z.string(), // Assuming user_id is a string
     first_name: z.string(),
     last_name: z.string(),
     gender: z.string(),
-    date_of_birth: z.date(),
+    date_of_birth: coerce.date({
+      required_error: 'Date is required',
+      invalid_type_error: 'Invalid date'
+    }),
     nationality: z.string(),
     identification: z.string()
   })
+  .merge(createUserSchema)
   .strict();

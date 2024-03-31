@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const userSchema = z
+export const createUserSchema = z
   .object({
     contact: z.string(),
     password: z.string()
