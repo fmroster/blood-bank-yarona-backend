@@ -12,8 +12,8 @@ const createUserAndDonor = async (userData: IUser, donorData: IDonor): Promise<{
     session = await mongoose.startSession();
     session.startTransaction();
 
-    const user = await User.create(userData, { session });
-    await Donor.create({ ...donorData, user_id: user[0]._id }, { session });
+    const user = await User.create([userData], { session }); // Use create() with array for transaction
+    await Donor.create([{ ...donorData, user_id: user[0]._id }], { session });
 
     await session.commitTransaction();
     await session.endSession();
@@ -25,7 +25,13 @@ const createUserAndDonor = async (userData: IUser, donorData: IDonor): Promise<{
       await session.abortTransaction();
       session.endSession();
     }
-    throw new GenericError('User creation could not be completed', HttpStatusCode.UnprocessableEntity);
+    if ((error as Error).message.toLowerCase().includes('duplicate key')) {
+      throw new GenericError('Problem with details', HttpStatusCode.UnprocessableEntity);
+    }
+    throw new GenericError(
+      (error as Error).message || 'User creation could not be completed',
+      HttpStatusCode.UnprocessableEntity
+    );
   }
 };
 
