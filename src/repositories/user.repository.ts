@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createUserSchema } from '../helpers/validations/user.validation';
-import { createDonorSchema } from '../helpers/validations/donor.validation';
+import { createDonorSchema, validateDonorSchema } from '../helpers/validations/donor.validation';
 import { Donor, IDonor, IUser, User } from '../models/yarona-models';
 import mongoose, { Document, Schema, ClientSession } from 'mongoose';
 import { GenericError } from '../helpers/error-classes';
@@ -35,8 +35,31 @@ const createUserAndDonor = async (userData: IUser, donorData: IDonor): Promise<{
   }
 };
 
-const getUserById = async (userId: string): Promise<IUser | null> => {
-  return User.findById(userId).exec();
+const getUser = async (user_id?: string, contact?: string): Promise<IUser | null> => {
+  let query = User.findOne();
+  if (user_id) {
+    query = query.where('_id', user_id);
+  } else if (contact) {
+    query = query.where('contact', contact);
+  } else {
+    return null;
+  }
+
+  query = query.select('-password');
+
+  return query.exec();
 };
 
-export const UserRepository = { createUserAndDonor, getUserById };
+const verifyDonor = async (verifyDonorBody: z.infer<typeof validateDonorSchema>): Promise<boolean> => {
+  const { identification, verification } = verifyDonorBody;
+  const result: mongoose.UpdateWriteOpResult = await Donor.updateOne(
+    { identification: identification, validation_status: false },
+    { $set: { validation_status: verification } }
+  );
+  if (result.modifiedCount) {
+    return true;
+  }
+  return false;
+};
+
+export const UserRepository = { createUserAndDonor, getUser, verifyDonor };

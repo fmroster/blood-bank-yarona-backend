@@ -15,3 +15,9 @@ export const createDonorSchema = z
   })
   .merge(createUserSchema)
   .strict();
+export const validateDonorSchema = z
+  .object({
+    identification: z.string(),
+    verification: z.boolean()
+  })
+  .strict();

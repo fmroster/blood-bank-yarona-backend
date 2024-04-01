@@ -30,6 +30,7 @@ export interface IBloodDonation extends Document {
   HIV: boolean;
   center_id: Schema.Types.ObjectId; // Changed type to ObjectId
   blood_results: boolean;
+  has_been_transfused: boolean;
 }
 
 export interface IDonor extends Document {
@@ -75,7 +76,8 @@ const BloodDonationSchema = new Schema<IBloodDonation>({
   syphilis: { type: Boolean, default: false },
   HIV: { type: Boolean, default: false },
   center_id: { type: Schema.Types.ObjectId, ref: 'DonationCenter' }, // Added ref
-  blood_results: { type: Boolean, default: false }
+  blood_results: { type: Boolean, default: false },
+  has_been_transfused: { type: Boolean, default: false }
 });
 
 const DonorSchema = new Schema<IDonor>({
