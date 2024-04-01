@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const donationCenterSchema = z
+export const createDonationCenterSchema = z
   .object({
     centerName: z.string()
   })

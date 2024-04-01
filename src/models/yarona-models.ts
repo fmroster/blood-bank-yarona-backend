@@ -1,37 +1,39 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-interface IDonationCenter extends Document {
+export interface IDonationCenter extends Document {
   center_name: string;
 }
 
-interface IUser extends Document {
+export interface IUser extends Document {
   contact: string;
   password: string;
 }
 
-interface IAppointment extends Document {
+export interface IAppointment extends Document {
   center_id: Schema.Types.ObjectId;
   user_id: Schema.Types.ObjectId;
   appointment_date: Date;
-  status: string;
-}
-
-interface IBloodRequest extends Document {
-  blood_group: string;
-  center_id: Schema.Types.ObjectId; // Changed type to ObjectId
   status: boolean;
 }
 
-interface IBloodDonation extends Document {
+export interface IBloodRequest extends Document {
+  blood_group: string;
+  center_id: Schema.Types.ObjectId;
+  active: boolean; // if true then blood request is still active
+}
+
+export interface IBloodDonation extends Document {
   donor_id: Schema.Types.ObjectId; // Changed type to ObjectId
   blood_group: string;
   donation_date: Date;
   syphilis: boolean;
   HIV: boolean;
   center_id: Schema.Types.ObjectId; // Changed type to ObjectId
+  blood_results: boolean;
+  has_been_transfused: boolean;
 }
 
-interface IDonor extends Document {
+export interface IDonor extends Document {
   user_id: Schema.Types.ObjectId; // Changed type to ObjectId
   first_name: string;
   last_name: string;
@@ -39,50 +41,57 @@ interface IDonor extends Document {
   date_of_birth: Date;
   nationality: string;
   identification: string;
+  validation_status: boolean;
 }
 
 // Define Mongoose schemas
-const DonationCenterSchema = new Schema({
+const DonationCenterSchema = new Schema<IDonationCenter>({
   center_name: String
 });
 
-const UserSchema = new Schema({
-  lastname: String,
+const UserSchema = new Schema<IUser>({
   contact: String,
   password: String
 });
 
-const AppointmentSchema = new Schema({
+UserSchema.index({ contact: 1 }, { unique: true });
+
+const AppointmentSchema = new Schema<IAppointment>({
   center_id: { type: Schema.Types.ObjectId, ref: 'DonationCenter' }, // Added ref
   user_id: { type: Schema.Types.ObjectId, ref: 'User' }, // Added ref
   appointment_date: Date,
-  status: String
+  status: { type: Boolean, default: false }
 });
 
-const BloodRequestSchema = new Schema({
+const BloodRequestSchema = new Schema<IBloodRequest>({
   blood_group: String,
   center_id: { type: Schema.Types.ObjectId, ref: 'DonationCenter' }, // Added ref
-  status: Boolean
+  active: { type: Boolean, default: true }
 });
 
-const BloodDonationSchema = new Schema({
+const BloodDonationSchema = new Schema<IBloodDonation>({
   donor_id: { type: Schema.Types.ObjectId, ref: 'User' }, // Added ref
   blood_group: String,
   donation_date: Date,
-  syphilis: Boolean,
-  HIV: Boolean,
-  center_id: { type: Schema.Types.ObjectId, ref: 'DonationCenter' } // Added ref
+  syphilis: { type: Boolean, default: false },
+  HIV: { type: Boolean, default: false },
+  center_id: { type: Schema.Types.ObjectId, ref: 'DonationCenter' }, // Added ref
+  blood_results: { type: Boolean, default: false },
+  has_been_transfused: { type: Boolean, default: false }
 });
 
-const DonorSchema = new Schema({
+const DonorSchema = new Schema<IDonor>({
   user_id: { type: Schema.Types.ObjectId, ref: 'User' }, // Added ref
   first_name: String,
   last_name: String,
   gender: String,
   date_of_birth: Date,
   nationality: String,
-  identification: String
+  identification: String,
+  validation_status: { type: Boolean, default: false }
 });
+
+DonorSchema.index({ identification: 1 }, { unique: true });
 
 // Define models
 const DonationCenter = mongoose.model<IDonationCenter>('DonationCenter', DonationCenterSchema);
