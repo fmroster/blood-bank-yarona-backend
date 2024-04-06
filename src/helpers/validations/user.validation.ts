@@ -1,5 +1,5 @@
 import { z } from 'zod';
-
+const numberPattern = /^[0-9]+$/;
 export const createUserSchema = z
   .object({
     contact: z.string(),
@@ -9,7 +9,7 @@ export const createUserSchema = z
 
 export const getUserSchema = z
   .object({
-    user_id: z.string().optional(),
+    user_id: z.string().regex(numberPattern).optional(),
     contact: z.string().optional()
   })
   .strict()
@@ -22,3 +22,9 @@ export const getUserSchema = z
       message: 'At least one parameter is required'
     }
   );
+
+export const deleteDonorSchema = z
+  .object({
+    identification: z.string()
+  })
+  .strict();

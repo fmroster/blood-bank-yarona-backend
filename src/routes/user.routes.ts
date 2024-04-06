@@ -5,8 +5,9 @@ import { UserRepository } from '../repositories/user.repository';
 import { IDonor, IUser } from '../models/yarona-models';
 import { successResponse } from '../helpers/functions';
 import { HttpStatusCode } from 'axios';
-import { getUserSchema } from '../helpers/validations/user.validation';
+import { deleteDonorSchema, getUserSchema } from '../helpers/validations/user.validation';
 import { GenericError, NotFoundError } from '../helpers/error-classes';
+import { DonorRepository } from '../repositories/donor.repository';
 
 const UserRoutes = CreateRouter();
 
@@ -47,13 +48,24 @@ export const getUser: RequestHandler = async (req: Request, res: Response) => {
 export const validateDonor: RequestHandler = async (req: Request, res: Response) => {
   const userValidationBody = validateDonorSchema.parse(req.body);
 
-  const verifyDonor = await UserRepository.verifyDonor(userValidationBody);
+  const verifyDonor = await DonorRepository.verifyDonor(userValidationBody);
   if (!verifyDonor) {
     throw new GenericError('Could not be verify donor', HttpStatusCode.UnprocessableEntity);
   }
   return successResponse(res, HttpStatusCode.Created, 'Verification success');
 };
+const deleteDonor: RequestHandler = async (req: Request, res: Response) => {
+  const deleteDonorQuery = deleteDonorSchema.parse(req.query);
+  const getDonor = await DonorRepository.getDonor(deleteDonorQuery);
+  if (getDonor.length === 0) {
+    throw new GenericError('Could not delete donor who does not exits', HttpStatusCode.UnprocessableEntity);
+  }
+  const deleteDonor = await UserRepository.deleteDonor(getDonor[0].user_id.toString());
+  if (!deleteDonor) throw new GenericError('Donor possibly already verified', HttpStatusCode.UnprocessableEntity);
 
-UserRoutes.post('/', createDonor).get('/', getUser).put('/verification', validateDonor);
+  return successResponse(res, HttpStatusCode.Created, 'Donor deleted successfully');
+};
+
+UserRoutes.post('/', createDonor).get('/', getUser).put('/verification', validateDonor).delete('/', deleteDonor);
 
 export { UserRoutes };

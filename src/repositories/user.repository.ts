@@ -1,11 +1,8 @@
-import { z } from 'zod';
-import { createUserSchema } from '../helpers/validations/user.validation';
-import { createDonorSchema, validateDonorSchema } from '../helpers/validations/donor.validation';
 import { Donor, IDonor, IUser, User } from '../models/yarona-models';
-import mongoose, { Document, Schema, ClientSession } from 'mongoose';
+import mongoose, { ClientSession } from 'mongoose';
 import { GenericError } from '../helpers/error-classes';
 import { HttpStatusCode } from 'axios';
-const createUserAndDonor = async (userData: IUser, donorData: IDonor): Promise<{ user_id: string }> => {
+const createDonor = async (userData: IUser, donorData: IDonor): Promise<{ user_id: number }> => {
   let session: ClientSession | null = null;
 
   try {
@@ -18,7 +15,7 @@ const createUserAndDonor = async (userData: IUser, donorData: IDonor): Promise<{
     await session.commitTransaction();
     await session.endSession();
 
-    return { user_id: user[0]._id.toString() };
+    return { user_id: user[0]._id };
   } catch (error) {
     // Rollback changes if an error occurs
     if (session) {
@@ -50,16 +47,38 @@ const getUser = async (user_id?: string, contact?: string): Promise<IUser | null
   return query.exec();
 };
 
-const verifyDonor = async (verifyDonorBody: z.infer<typeof validateDonorSchema>): Promise<boolean> => {
-  const { identification, verification } = verifyDonorBody;
-  const result: mongoose.UpdateWriteOpResult = await Donor.updateOne(
-    { identification: identification, validation_status: false },
-    { $set: { validation_status: verification } }
-  );
-  if (result.modifiedCount) {
+const deleteDonor = async (userId: string): Promise<boolean> => {
+  let session: ClientSession | null = null;
+
+  try {
+    session = await mongoose.startSession();
+    session.startTransaction();
+
+    // Delete donor first
+    const donorDeleteResults: mongoose.mongo.DeleteResult = await Donor.deleteOne(
+      { user_id: userId, validation_status: false },
+      { session }
+    );
+
+    if (donorDeleteResults.deletedCount === 0) {
+      return false;
+    }
+
+    // Then delete user
+    await User.deleteOne({ _id: userId }, { session });
+
+    await session.commitTransaction();
+    await session.endSession();
+
     return true;
+  } catch (error) {
+    if (session) {
+      await session.abortTransaction();
+      await session.endSession();
+    }
+
+    throw new GenericError((error as Error).message || 'Failed to delete donor', HttpStatusCode.UnprocessableEntity);
   }
-  return false;
 };
 
-export const UserRepository = { createUserAndDonor, getUser, verifyDonor };
+export const UserRepository = { createUserAndDonor: createDonor, getUser, deleteDonor };

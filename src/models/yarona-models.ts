@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IDonationCenter extends Document {
   center_name: string;
+  location: string;
 }
 
 export interface IUser extends Document {
@@ -10,31 +11,31 @@ export interface IUser extends Document {
 }
 
 export interface IAppointment extends Document {
-  center_id: Schema.Types.ObjectId;
-  user_id: Schema.Types.ObjectId;
+  center_id: number;
+  user_id: number;
   appointment_date: Date;
   status: boolean;
 }
 
 export interface IBloodRequest extends Document {
   blood_group: string;
-  center_id: Schema.Types.ObjectId;
+  center_id: number;
   active: boolean; // if true then blood request is still active
 }
 
 export interface IBloodDonation extends Document {
-  donor_id: Schema.Types.ObjectId; // Changed type to ObjectId
+  donor_id: number; // Changed type to ObjectId
   blood_group: string;
   donation_date: Date;
   syphilis: boolean;
   HIV: boolean;
-  center_id: Schema.Types.ObjectId; // Changed type to ObjectId
+  center_id: number; // Changed type to ObjectId
   blood_results: boolean;
   has_been_transfused: boolean;
 }
 
 export interface IDonor extends Document {
-  user_id: Schema.Types.ObjectId; // Changed type to ObjectId
+  user_id: number; // Changed type to ObjectId
   first_name: string;
   last_name: string;
   gender: string;
@@ -46,42 +47,79 @@ export interface IDonor extends Document {
 
 // Define Mongoose schemas
 const DonationCenterSchema = new Schema<IDonationCenter>({
-  center_name: String
+  _id: Number,
+  center_name: String,
+  location: String
 });
 
 const UserSchema = new Schema<IUser>({
+  _id: Number,
   contact: String,
   password: String
 });
 
+const UserSequenceSchema = new Schema({
+  collectionName: { type: String, required: true },
+  sequenceValue: { type: Number, default: 1 }
+});
+
 UserSchema.index({ contact: 1 }, { unique: true });
+const Sequence = mongoose.model('Sequence', UserSequenceSchema);
+
+// Middleware to auto-increment _id
+UserSchema.pre<IUser>('save', async function (next) {
+  if (this.isNew) {
+    const sequence = await Sequence.findOneAndUpdate(
+      { collectionName: 'users' }, // collectionName should match the name of your collection
+      { $inc: { sequenceValue: 1 } },
+      { upsert: true, new: true }
+    );
+    this._id = sequence.sequenceValue;
+    next();
+  } else {
+    next();
+  }
+});
+DonationCenterSchema.pre<IDonationCenter>('save', async function (next) {
+  if (this.isNew) {
+    const sequence = await Sequence.findOneAndUpdate(
+      { collectionName: 'donationcenters' }, // collectionName should match the name of your collection
+      { $inc: { sequenceValue: 1 } },
+      { upsert: true, new: true }
+    );
+    this._id = sequence.sequenceValue;
+    next();
+  } else {
+    next();
+  }
+});
 
 const AppointmentSchema = new Schema<IAppointment>({
-  center_id: { type: Schema.Types.ObjectId, ref: 'DonationCenter' }, // Added ref
-  user_id: { type: Schema.Types.ObjectId, ref: 'User' }, // Added ref
+  center_id: { type: Number, ref: 'DonationCenter' }, // Added ref
+  user_id: { type: Number, ref: 'User' }, // Added ref
   appointment_date: Date,
   status: { type: Boolean, default: false }
 });
 
 const BloodRequestSchema = new Schema<IBloodRequest>({
   blood_group: String,
-  center_id: { type: Schema.Types.ObjectId, ref: 'DonationCenter' }, // Added ref
+  center_id: { type: Number, ref: 'DonationCenter' }, // Added ref
   active: { type: Boolean, default: true }
 });
 
 const BloodDonationSchema = new Schema<IBloodDonation>({
-  donor_id: { type: Schema.Types.ObjectId, ref: 'User' }, // Added ref
+  donor_id: { type: Number, ref: 'User' }, // Added ref
   blood_group: String,
   donation_date: Date,
   syphilis: { type: Boolean, default: false },
   HIV: { type: Boolean, default: false },
-  center_id: { type: Schema.Types.ObjectId, ref: 'DonationCenter' }, // Added ref
+  center_id: { type: Number, ref: 'DonationCenter' }, // Added ref
   blood_results: { type: Boolean, default: false },
   has_been_transfused: { type: Boolean, default: false }
 });
 
 const DonorSchema = new Schema<IDonor>({
-  user_id: { type: Schema.Types.ObjectId, ref: 'User' }, // Added ref
+  user_id: { type: Number, ref: 'User' }, // Added ref
   first_name: String,
   last_name: String,
   gender: String,

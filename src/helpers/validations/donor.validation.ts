@@ -21,3 +21,20 @@ export const validateDonorSchema = z
     verification: z.boolean()
   })
   .strict();
+
+export const getDonorSchema = z
+  .object({
+    user_id: z.string().optional(),
+    identification: z.string().optional(),
+    verification: z
+      .string() // Expecting a string value
+      .optional()
+      .transform((value) => {
+        if (value == 'true') {
+          return true;
+        } else if (value == 'false') {
+          return false;
+        }
+      })
+  })
+  .strict();
