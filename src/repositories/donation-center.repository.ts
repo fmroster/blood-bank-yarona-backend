@@ -25,7 +25,10 @@ const getDonationCenters = async (centerQuery: z.infer<typeof getDonationCenterS
     const regex = new RegExp(centerQuery.location, 'i');
     query = query.where('location', regex);
   }
-
+  if (centerQuery.center_id) {
+    query = query.where('_id', centerQuery.center_id);
+  }
+  query = query.select('-__v');
   // Execute the query and return the results
   return query.exec();
 };

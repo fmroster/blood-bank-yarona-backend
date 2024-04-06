@@ -16,7 +16,7 @@ const getDonor = async (donorQuery: z.infer<typeof getDonorSchema>): Promise<IDo
   if (donorQuery.verification !== undefined) {
     query = query.where('validation_status', donorQuery.verification);
   }
-
+  query = query.select('-__v');
   // Execute the query and return the results
   return query.exec();
 };

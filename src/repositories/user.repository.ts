@@ -43,7 +43,7 @@ const getUser = async (user_id?: string, contact?: string): Promise<IUser | null
   }
 
   query = query.select('-password');
-
+  query = query.select('-__v');
   return query.exec();
 };
 
