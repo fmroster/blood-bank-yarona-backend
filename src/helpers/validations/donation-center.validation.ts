@@ -1,7 +1,15 @@
 import { z } from 'zod';
 
-export const createDonationCenterSchema = z
+export const donationCenterSchema = z
   .object({
-    centerName: z.string()
+    center_name: z.string(),
+    location: z.string().optional()
+  })
+  .strict();
+
+export const getDonationCenterSchema = z
+  .object({
+    center_name: z.string().optional(),
+    location: z.string().optional()
   })
   .strict();
