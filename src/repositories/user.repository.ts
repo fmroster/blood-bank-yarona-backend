@@ -1,4 +1,4 @@
-import { Donor, IDonor, IUser, User } from '../models/yarona-models';
+import { DonationCenter, Donor, IDonationCenter, IDonor, IUser, User } from '../models/yarona-models';
 import mongoose, { ClientSession } from 'mongoose';
 import { GenericError } from '../helpers/error-classes';
 import { HttpStatusCode } from 'axios';
@@ -9,7 +9,7 @@ const createDonor = async (userData: IUser, donorData: IDonor): Promise<{ user_i
     session = await mongoose.startSession();
     session.startTransaction();
 
-    const user = await User.create([userData], { session }); // Use create() with array for transaction
+    const user = await User.create([{ contact: userData.contact, _id: userData._id, user_role: 1 }], { session }); // Use create() with array for transaction
     await Donor.create([{ ...donorData, user_id: user[0]._id }], { session });
 
     await session.commitTransaction();
@@ -23,7 +23,7 @@ const createDonor = async (userData: IUser, donorData: IDonor): Promise<{ user_i
       session.endSession();
     }
     if ((error as Error).message.toLowerCase().includes('duplicate key')) {
-      throw new GenericError('Problem with details', HttpStatusCode.UnprocessableEntity);
+      throw new GenericError('Duplicate email or identification number', HttpStatusCode.UnprocessableEntity);
     }
     throw new GenericError(
       (error as Error).message || 'User creation could not be completed',
@@ -32,6 +32,35 @@ const createDonor = async (userData: IUser, donorData: IDonor): Promise<{ user_i
   }
 };
 
+const createCenter = async (userData: IUser, centerData: IDonationCenter) => {
+  let session: ClientSession | null = null;
+
+  try {
+    session = await mongoose.startSession();
+    session.startTransaction();
+
+    const user = await User.create([{ contact: userData.contact, _id: userData._id, user_role: 2 }], { session });
+    await DonationCenter.create([{ ...centerData, _id: user[0]._id }], { session });
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return { user_id: user[0]._id };
+  } catch (error) {
+    // Rollback changes if an error occurs
+    if (session) {
+      await session.abortTransaction();
+      session.endSession();
+    }
+    if ((error as Error).message.toLowerCase().includes('duplicate key')) {
+      throw new GenericError('Duplicate email', HttpStatusCode.UnprocessableEntity);
+    }
+    throw new GenericError(
+      (error as Error).message || 'User creation could not be completed',
+      HttpStatusCode.UnprocessableEntity
+    );
+  }
+};
 const getUser = async (user_id?: string, contact?: string): Promise<IUser | null> => {
   let query = User.findOne();
   if (user_id) {
@@ -81,4 +110,4 @@ const deleteDonor = async (userId: string): Promise<boolean> => {
   }
 };
 
-export const UserRepository = { createUserAndDonor: createDonor, getUser, deleteDonor };
+export const UserRepository = { createUserAndDonor: createDonor, getUser, deleteDonor, createCenter };

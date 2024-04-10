@@ -1,16 +1,16 @@
-import { z } from 'zod';
+import { literal, optional, string, z } from 'zod';
 export const numberPattern = /^[0-9]+$/;
 export const createUserSchema = z
   .object({
-    contact: z.string(),
-    password: z.string()
+    contact: z.string().email('Email is invalid'),
+    user_id: z.string()
   })
   .strict();
 
 export const getUserSchema = z
   .object({
-    user_id: z.string().regex(numberPattern, 'Enter a number').optional(),
-    contact: z.string().optional()
+    user_id: z.string().optional(),
+    contact: optional(string().email('Email is invalid')).or(literal(''))
   })
   .strict()
   .refine(

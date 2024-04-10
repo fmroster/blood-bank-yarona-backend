@@ -37,7 +37,7 @@ export const createDonation: RequestHandler = async (req: Request, res: Response
     throw new GenericError('User does not exist', HttpStatusCode.UnprocessableEntity);
   }
 
-  const user_id: number = getDonorDetails[0].user_id;
+  const user_id: string = getDonorDetails[0].user_id;
 
   const createBloodDonation = await DonationRepository.createBloodDonation(donationBody, user_id);
 
@@ -50,7 +50,7 @@ export const createDonation: RequestHandler = async (req: Request, res: Response
 
 export const getDonation: RequestHandler = async (req: Request, res: Response) => {
   const donationQuery = getBloodDonationSchema.parse(req.query);
-  let user_id: number | undefined = undefined;
+  let user_id: string | undefined = undefined;
 
   if (donationQuery.donor_identification) {
     const getDonorDetails = await DonorRepository.getDonor({ identification: donationQuery.donor_identification });

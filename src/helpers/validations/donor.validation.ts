@@ -34,7 +34,7 @@ export const zodBooleanString = z
 
 export const getDonorSchema = z
   .object({
-    user_id: z.string().regex(numberPattern, 'Enter a number').optional(),
+    user_id: z.string().optional(),
     identification: z.string().optional(),
     verification: zodBooleanString
   })
