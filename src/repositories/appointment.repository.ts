@@ -51,4 +51,4 @@ const verifyAppointment = async (appointmentBody: z.infer<typeof approveAppointm
 
   return !!result.modifiedCount;
 };
-export const appointmentRepository = { createAppointment, getAppointment, updateAppointment, verifyAppointment };
+export const AppointmentRepository = { createAppointment, getAppointment, updateAppointment, verifyAppointment };

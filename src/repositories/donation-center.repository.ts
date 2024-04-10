@@ -4,9 +4,9 @@ import { DonationCenter, IDonationCenter } from '../models/yarona-models';
 
 const createDonationCenter = async (
   donationCentreBody: z.infer<typeof donationCenterSchema>
-): Promise<{ center_id: number }> => {
+): Promise<{ center_id: string }> => {
   const center = await DonationCenter.create(donationCentreBody);
-  const center_id: number = center._id;
+  const center_id: string = center._id;
 
   return { center_id };
 };
@@ -32,4 +32,4 @@ const getDonationCenters = async (centerQuery: z.infer<typeof getDonationCenterS
   // Execute the query and return the results
   return query.exec();
 };
-export const donationCenterRepository = { createDonationCenter, getDonationCenters };
+export const DonationCenterRepository = { createDonationCenter, getDonationCenters };

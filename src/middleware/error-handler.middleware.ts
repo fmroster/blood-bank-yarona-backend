@@ -29,7 +29,10 @@ export const errorHandler = (error: Error, req: Request, res: Response, next: Ne
 
   // handle mongoose errors
   if (error instanceof MongooseError) {
-    const mongooseErrors = Object.values(error).map((mongooseError) => mongooseError.message);
+    const mongooseErrors = Object.values(error).map((mongooseError) => {
+      // Check if mongooseError has a message property before accessing it
+      return mongooseError.message ? mongooseError.message : mongooseError.name;
+    });
     return errorResponse(res, HttpStatusCode.BadRequest, 'Database error occurred', mongooseErrors);
   }
 

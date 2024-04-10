@@ -1,7 +1,7 @@
 import { CreateRouter } from '../middleware/request-handler.middleware';
 import { Request, RequestHandler, Response } from 'express';
 import { donationCenterSchema, getDonationCenterSchema } from '../helpers/validations/donation-center.validation';
-import { donationCenterRepository } from '../repositories/donation-center.repository';
+import { DonationCenterRepository } from '../repositories/donation-center.repository';
 import { successResponse } from '../helpers/functions';
 import { HttpStatusCode } from 'axios';
 import { NotFoundError } from '../helpers/error-classes';
@@ -28,7 +28,7 @@ export const createDonationCenter: RequestHandler = async (req: Request, res: Re
 export const getDonationCenter: RequestHandler = async (req: Request, res: Response) => {
   const centerQuery = getDonationCenterSchema.parse(req.query);
 
-  const getCenters = await donationCenterRepository.getDonationCenters(centerQuery);
+  const getCenters = await DonationCenterRepository.getDonationCenters(centerQuery);
 
   if (getCenters.length === 0) {
     throw new NotFoundError('Centers not found');

@@ -6,6 +6,7 @@ import { DonorRoutes } from './routes/donor.routes';
 import { centerRoutes } from './routes/donation-center.routes';
 import { AppointmentRoutes } from './routes/appointment.routes';
 import { DonationRoutes } from './routes/donation.routes';
+import { BloodRequestRoutes } from './routes/blood-request.routes';
 
 const app = startApp();
 
@@ -17,6 +18,7 @@ app.use('/donor', DonorRoutes);
 app.use('/center', centerRoutes);
 app.use('/appointment', AppointmentRoutes);
 app.use('/donation', DonationRoutes);
+app.use('/blood-request', BloodRequestRoutes);
 
 // global error handler
 app.use(errorHandler);

@@ -18,7 +18,7 @@ import {
   extractIdsFromDonationCenters,
   IDonationCenterStats
 } from '../repositories/repository.helpers';
-import { donationCenterRepository } from '../repositories/donation-center.repository';
+import { DonationCenterRepository } from '../repositories/donation-center.repository';
 
 const DonationRoutes = CreateRouter();
 
@@ -26,7 +26,7 @@ export const createDonation: RequestHandler = async (req: Request, res: Response
   const donationBody = createBloodDonationSchema.parse(req.body);
 
   const getDonorDetails = await DonorRepository.getDonor({ identification: donationBody.identification });
-  const getDonationCenter = await donationCenterRepository.getDonationCenters({
+  const getDonationCenter = await DonationCenterRepository.getDonationCenters({
     center_id: donationBody.center_id.toString()
   });
 
@@ -110,9 +110,9 @@ const transfuseDisposeBlood: RequestHandler = async (req: Request, res: Response
 const bloodCenterBloodStatistics: RequestHandler = async (req: Request, res: Response) => {
   const bloodCenterQuery = getCenterStatsSchema.parse(req.query);
 
-  const bloodCenters: IDonationCenter[] = await donationCenterRepository.getDonationCenters(bloodCenterQuery);
+  const bloodCenters: IDonationCenter[] = await DonationCenterRepository.getDonationCenters(bloodCenterQuery);
 
-  const centerIds: number[] = extractIdsFromDonationCenters(bloodCenters);
+  const centerIds: string[] = extractIdsFromDonationCenters(bloodCenters);
 
   const getBloodDonations: IBloodDonation[] = await DonationRepository.getCenterBloodDonations(centerIds);
 

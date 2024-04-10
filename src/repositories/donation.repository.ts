@@ -48,7 +48,7 @@ const getBloodDonation = async (
   return query.exec();
 };
 
-const getCenterBloodDonations = async (center_id: number[]): Promise<IBloodDonation[]> => {
+const getCenterBloodDonations = async (center_id: string[]): Promise<IBloodDonation[]> => {
   let query: any; // Change IBloodDonation[] to any as Mongoose returns a Query object
 
   if (center_id.length === 0) {
