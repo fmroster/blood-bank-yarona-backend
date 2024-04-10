@@ -1,5 +1,5 @@
 import { coerce, z } from 'zod';
-import { createUserSchema } from './user.validation';
+import { createUserSchema, numberPattern } from './user.validation';
 
 export const createDonorSchema = z
   .object({
@@ -21,20 +21,21 @@ export const validateDonorSchema = z
     verification: z.boolean()
   })
   .strict();
+export const zodBooleanString = z
+  .string() // Expecting a string value
+  .optional()
+  .transform((value) => {
+    if (value == 'true') {
+      return true;
+    } else if (value == 'false') {
+      return false;
+    }
+  });
 
 export const getDonorSchema = z
   .object({
-    user_id: z.string().optional(),
+    user_id: z.string().regex(numberPattern, 'Enter a number').optional(),
     identification: z.string().optional(),
-    verification: z
-      .string() // Expecting a string value
-      .optional()
-      .transform((value) => {
-        if (value == 'true') {
-          return true;
-        } else if (value == 'false') {
-          return false;
-        }
-      })
+    verification: zodBooleanString
   })
   .strict();

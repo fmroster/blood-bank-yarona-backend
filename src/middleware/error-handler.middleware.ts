@@ -8,9 +8,11 @@ import { errorResponse } from '../helpers/functions';
 import { Error as MongooseError } from 'mongoose';
 
 export const errorHandler = (error: Error, req: Request, res: Response, next: NextFunction) => {
+  console.log(error);
   // handle custom errors
   if (error instanceof BaseError) {
     const err: BaseError = error as BaseError;
+    console.log(error);
     return errorResponse(res, err.statusCode, err.message);
   }
 

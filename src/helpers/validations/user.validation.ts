@@ -1,5 +1,5 @@
 import { z } from 'zod';
-const numberPattern = /^[0-9]+$/;
+export const numberPattern = /^[0-9]+$/;
 export const createUserSchema = z
   .object({
     contact: z.string(),
@@ -9,7 +9,7 @@ export const createUserSchema = z
 
 export const getUserSchema = z
   .object({
-    user_id: z.string().regex(numberPattern).optional(),
+    user_id: z.string().regex(numberPattern, 'Enter a number').optional(),
     contact: z.string().optional()
   })
   .strict()
