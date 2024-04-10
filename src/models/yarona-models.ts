@@ -32,7 +32,7 @@ export interface IBloodDonation extends Document {
   center_id: number;
   blood_results: boolean;
   is_donatable: boolean;
-  has_been_transfused: boolean;
+  has_been_transfused_or_disposed: boolean;
 }
 
 export interface IDonor extends Document {
@@ -111,13 +111,13 @@ const BloodRequestSchema = new Schema<IBloodRequest>({
 const BloodDonationSchema = new Schema<IBloodDonation>({
   donor_id: { type: Number, ref: 'User' }, // Added ref
   blood_group: { type: String, default: null },
-  donation_date: Date,
+  donation_date: { type: Date, default: Date.now },
   syphilis: { type: Boolean, default: false },
   HIV: { type: Boolean, default: false },
   center_id: { type: Number, ref: 'DonationCenter' }, // Added ref
   blood_results: { type: Boolean, default: false },
   is_donatable: { type: Boolean, default: false },
-  has_been_transfused: { type: Boolean, default: false }
+  has_been_transfused_or_disposed: { type: Boolean, default: false }
 });
 
 const DonorSchema = new Schema<IDonor>({

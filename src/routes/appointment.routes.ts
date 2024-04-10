@@ -14,7 +14,7 @@ import { successResponse } from '../helpers/functions';
 import { UserRepository } from '../repositories/user.repository';
 import { donationCenterRepository } from '../repositories/donation-center.repository';
 
-const appointmentRoutes = CreateRouter();
+const AppointmentRoutes = CreateRouter();
 
 const createAppointment: RequestHandler = async (req: Request, res: Response) => {
   const appointmentBody = appointmentSchema.parse(req.body);
@@ -85,10 +85,10 @@ const updateAppointment: RequestHandler = async (req: Request, res: Response) =>
   return successResponse(res, HttpStatusCode.Ok, 'Appointment updated');
 };
 
-appointmentRoutes
-  .post('/', createAppointment)
+AppointmentRoutes.post('/', createAppointment)
   .get('/', getAppointment)
   .get('/center', getCenterAppointment)
-  .get('/user', getUserAppointment);
+  .get('/user', getUserAppointment)
+  .put('/', updateAppointment);
 
-export { appointmentRoutes };
+export { AppointmentRoutes };
