@@ -14,14 +14,14 @@ enum BloodType {
 export const createBloodDonationSchema = z
   .object({
     identification: z.string(),
-    center_id: z.number().positive()
+    center_id: z.string()
   })
   .strict();
 
 export const getBloodDonationSchema = z
   .object({
     donor_identification: z.string().optional(),
-    center_id: z.string().regex(numberPattern, 'Provide a valid parameter(number)').optional(),
+    center_id: z.string().optional(),
     blood_group: z.nativeEnum(BloodType).optional()
   })
   .strict();
@@ -43,7 +43,7 @@ export const transfuseBloodSchema = z
 
 export const getCenterStatsSchema = z
   .object({
-    center_id: z.string().regex(numberPattern).optional(),
+    center_id: z.string().optional(),
     center_name: z.string().optional(),
     location: z.string().optional()
   })

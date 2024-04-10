@@ -4,8 +4,8 @@ import { zodBooleanString } from './donor.validation';
 
 export const appointmentSchema = z
   .object({
-    center_id: z.number(),
-    user_id: z.number(),
+    center_id: z.string(),
+    user_id: z.string(),
     appointment_date: coerce.date({
       required_error: 'Date is required',
       invalid_type_error: 'Invalid date'
@@ -14,8 +14,8 @@ export const appointmentSchema = z
   .strict();
 export const getAppointmentSchema = z
   .object({
-    center_id: z.string().regex(numberPattern, 'Enter a number').optional(),
-    user_id: z.string().regex(numberPattern, 'Enter a number').optional(),
+    center_id: z.string().optional(),
+    user_id: z.string().optional(),
     status: zodBooleanString,
     appointment_id: z.string().optional()
   })
@@ -32,13 +32,13 @@ export const getAppointmentSchema = z
 
 export const getUserAppointmentSchema = z
   .object({
-    user_id: z.string().regex(numberPattern, 'Enter a number')
+    user_id: z.string()
   })
   .strict();
 
 export const getCenterAppointmentSchema = z
   .object({
-    center_id: z.string().regex(numberPattern, 'Enter a number'),
+    center_id: z.string(),
     status: zodBooleanString
   })
   .strict();

@@ -5,13 +5,22 @@ import { donationCenterRepository } from '../repositories/donation-center.reposi
 import { successResponse } from '../helpers/functions';
 import { HttpStatusCode } from 'axios';
 import { NotFoundError } from '../helpers/error-classes';
+import { UserRepository } from '../repositories/user.repository';
+import { IDonationCenter, IUser } from '../models/yarona-models';
 
 const centerRoutes = CreateRouter();
 
 export const createDonationCenter: RequestHandler = async (req: Request, res: Response) => {
   const centerBody = donationCenterSchema.parse(req.body);
 
-  const createCenter = await donationCenterRepository.createDonationCenter(centerBody);
+  const centerData = { center_name: centerBody.center_name, location: centerBody.location };
+
+  const userData = {
+    contact: centerBody.contact,
+    _id: centerBody.user_id
+  };
+
+  const createCenter = await UserRepository.createCenter(userData as IUser, centerData as IDonationCenter);
 
   return successResponse(res, HttpStatusCode.Created, 'Donation center created', createCenter);
 };

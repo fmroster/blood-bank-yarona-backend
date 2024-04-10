@@ -25,7 +25,7 @@ export const createDonor: RequestHandler = async (req: Request, res: Response) =
 
   const userData = {
     contact: donorBody.contact,
-    password: donorBody.password
+    _id: donorBody.user_id
   };
 
   const createDonorUser = await UserRepository.createUserAndDonor(userData as IUser, donorData as IDonor);

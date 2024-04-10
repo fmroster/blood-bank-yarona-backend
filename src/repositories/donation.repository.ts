@@ -12,7 +12,7 @@ import { IDonationCenterStats } from './repository.helpers';
 
 const createBloodDonation = async (
   createDonationBody: z.infer<typeof createBloodDonationSchema>,
-  user_id: number
+  user_id: string
 ): Promise<boolean> => {
   const result = await BloodDonation.create({ donor_id: user_id, center_id: createDonationBody.center_id });
   if (!result._id) return false;
@@ -21,7 +21,7 @@ const createBloodDonation = async (
 
 const getBloodDonation = async (
   bloodDonationQuery: z.infer<typeof getBloodDonationSchema>,
-  donor_id?: number,
+  donor_id?: string,
   is_donatable?: boolean,
   has_been_transfused_or_disposed?: boolean
 ): Promise<IBloodDonation[]> => {
