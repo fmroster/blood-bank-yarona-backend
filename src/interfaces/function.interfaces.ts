@@ -11,3 +11,12 @@ export interface IErrorResponse extends BaseResponse {
   data: [];
   errors: any[];
 }
+
+export interface IBloodRequestWithCenterInfo {
+  _id: string;
+  blood_group: string;
+  center_id: string;
+  active: boolean;
+  center_name: string;
+  location: string;
+}

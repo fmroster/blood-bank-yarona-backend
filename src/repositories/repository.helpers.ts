@@ -1,7 +1,7 @@
 import { IBloodDonation, IDonationCenter } from '../models/yarona-models';
 
 export interface IDonationCenterStats {
-  center_id: number;
+  center_id: string;
   center_name: string;
   location: string;
   AB_POSITIVE: number;
@@ -18,7 +18,7 @@ export const calculateDonationCenterStats = (
   bloodDonations: IBloodDonation[],
   donationCenters: IDonationCenter[]
 ): IDonationCenterStats[] => {
-  const centerStatsMap: Map<number, IDonationCenterStats> = new Map();
+  const centerStatsMap: Map<string, IDonationCenterStats> = new Map();
 
   // Initialize centerStatsMap with donation centers
   donationCenters.forEach((center) => {
@@ -76,6 +76,6 @@ export const calculateDonationCenterStats = (
   return Array.from(centerStatsMap.values());
 };
 
-export const extractIdsFromDonationCenters = (donationCenters: IDonationCenter[]): number[] => {
+export const extractIdsFromDonationCenters = (donationCenters: IDonationCenter[]): string[] => {
   return donationCenters.map((center) => center._id);
 };

@@ -11,7 +11,7 @@ export interface IUser extends Document {
 }
 
 export interface IAppointment extends Document {
-  center_id: number;
+  center_id: string;
   user_id: number;
   appointment_date: Date;
   status: boolean;
@@ -19,7 +19,7 @@ export interface IAppointment extends Document {
 
 export interface IBloodRequest extends Document {
   blood_group: string;
-  center_id: number;
+  center_id: string;
   active: boolean; // if true then blood request is still active
 }
 
@@ -29,7 +29,7 @@ export interface IBloodDonation extends Document {
   donation_date: Date;
   syphilis: boolean;
   HIV: boolean;
-  center_id: number; // Changed type to ObjectId
+  center_id: string; // Changed type to ObjectId
   blood_results: boolean;
   has_been_transfused: boolean;
 }
@@ -61,7 +61,7 @@ const UserSchema = new Schema<IUser>({
 UserSchema.index({ contact: 1 }, { unique: true });
 
 const AppointmentSchema = new Schema<IAppointment>({
-  center_id: { type: Number, ref: 'DonationCenter' }, // Added ref
+  center_id: { type: String, ref: 'DonationCenter' }, // Added ref
   user_id: { type: Number, ref: 'User' }, // Added ref
   appointment_date: Date,
   status: { type: Boolean, default: false }
@@ -69,7 +69,7 @@ const AppointmentSchema = new Schema<IAppointment>({
 
 const BloodRequestSchema = new Schema<IBloodRequest>({
   blood_group: String,
-  center_id: { type: Number, ref: 'DonationCenter' }, // Added ref
+  center_id: { type: String, ref: 'DonationCenter' }, // Added ref
   active: { type: Boolean, default: true }
 });
 
@@ -79,7 +79,7 @@ const BloodDonationSchema = new Schema<IBloodDonation>({
   donation_date: Date,
   syphilis: { type: Boolean, default: false },
   HIV: { type: Boolean, default: false },
-  center_id: { type: Number, ref: 'DonationCenter' }, // Added ref
+  center_id: { type: String, ref: 'DonationCenter' }, // Added ref
   blood_results: { type: Boolean, default: false },
   has_been_transfused: { type: Boolean, default: false }
 });

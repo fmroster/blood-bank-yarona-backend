@@ -1,7 +1,6 @@
 import { z } from 'zod';
-import { numberPattern } from './user.validation';
 export const bloodTypeRegex = /^(A|B|AB|O)[+-]$/;
-enum BloodType {
+export enum BloodType {
   A_POSITIVE = 'A+',
   A_NEGATIVE = 'A-',
   B_POSITIVE = 'B+',
