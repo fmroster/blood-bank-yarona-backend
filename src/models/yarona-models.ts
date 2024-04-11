@@ -24,7 +24,7 @@ export interface IBloodRequest extends Document {
 }
 
 export interface IBloodDonation extends Document {
-  donor_id: number; // Changed type to ObjectId
+  donor_id: string; // Changed type to ObjectId
   blood_group: string;
   donation_date: Date;
   syphilis: boolean;
@@ -74,9 +74,9 @@ const BloodRequestSchema = new Schema<IBloodRequest>({
 });
 
 const BloodDonationSchema = new Schema<IBloodDonation>({
-  donor_id: { type: Number, ref: 'User' }, // Added ref
+  donor_id: { type: String, ref: 'User' }, // Added ref
   blood_group: String,
-  donation_date: Date,
+  donation_date: { type: Date, default: Date.now() },
   syphilis: { type: Boolean, default: false },
   HIV: { type: Boolean, default: false },
   center_id: { type: String, ref: 'DonationCenter' }, // Added ref

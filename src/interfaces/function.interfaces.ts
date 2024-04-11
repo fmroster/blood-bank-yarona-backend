@@ -20,3 +20,16 @@ export interface IBloodRequestWithCenterInfo {
   center_name: string;
   location: string;
 }
+
+export interface IBloodDonorWithPoints {
+  _id: string;
+  user_id: string; // Changed type to ObjectId
+  first_name: string;
+  last_name: string;
+  gender: string;
+  date_of_birth: Date;
+  nationality: string;
+  identification: string;
+  validation_status: boolean;
+  points: number;
+}
