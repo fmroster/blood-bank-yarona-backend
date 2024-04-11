@@ -20,19 +20,21 @@ const createBloodDonation = async (
 };
 
 const getBloodDonation = async (
-  bloodDonationQuery: z.infer<typeof getBloodDonationSchema>,
+  bloodDonationQuery?: z.infer<typeof getBloodDonationSchema>,
   donor_id?: string,
   is_donatable?: boolean,
   has_been_transfused_or_disposed?: boolean
 ): Promise<IBloodDonation[]> => {
   let query = BloodDonation.find();
+  if (bloodDonationQuery) {
+    if (bloodDonationQuery.blood_group) {
+      query = query.where('blood_group', bloodDonationQuery.blood_group);
+    }
+    if (bloodDonationQuery.center_id) {
+      query = query.where('center_id', bloodDonationQuery.center_id);
+    }
+  }
 
-  if (bloodDonationQuery.blood_group) {
-    query = query.where('blood_group', bloodDonationQuery.blood_group);
-  }
-  if (bloodDonationQuery.center_id) {
-    query = query.where('center_id', bloodDonationQuery.center_id);
-  }
   if (donor_id) {
     query = query.where('donor_id', donor_id);
   }
