@@ -12,7 +12,7 @@ export interface IUser extends Document {
 
 export interface IAppointment extends Document {
   center_id: string;
-  user_id: number;
+  user_id: string;
   appointment_date: Date;
   status: boolean;
 }
@@ -62,7 +62,7 @@ UserSchema.index({ contact: 1 }, { unique: true });
 
 const AppointmentSchema = new Schema<IAppointment>({
   center_id: { type: String, ref: 'DonationCenter' }, // Added ref
-  user_id: { type: Number, ref: 'User' }, // Added ref
+  user_id: { type: String, ref: 'User' }, // Added ref
   appointment_date: Date,
   status: { type: Boolean, default: false }
 });
